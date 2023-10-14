@@ -184,3 +184,60 @@ $$ LANGUAGE plpgsql;
 SELECT calcula_valor_venda_case(25); -- Deverá retornar o valor de venda com 30% de lucro
 
 
+--1.5 Resolva o problema disponível no link a seguir.
+-- https://www.beecrowd.com.br/judge/en/problems/view/1048
+
+--SOLUCAO COM IF
+
+CREATE OR REPLACE FUNCTION calcular_aumento_salarial(salario NUMERIC)
+RETURNS TABLE (
+    novo_salario NUMERIC,
+    reajuste_ganho NUMERIC,
+    percentual INT
+) AS
+$$
+BEGIN
+    IF salario <= 400.00 THEN
+        RETURN QUERY SELECT salario * 1.15, salario * 0.15, 15;
+    ELSIF salario <= 800.00 THEN
+        RETURN QUERY SELECT salario * 1.12, salario * 0.12, 12;
+    ELSIF salario <= 1200.00 THEN
+        RETURN QUERY SELECT salario * 1.10, salario * 0.10, 10;
+    ELSIF salario <= 2000.00 THEN
+        RETURN QUERY SELECT salario * 1.07, salario * 0.07, 7;
+    ELSE
+        RETURN QUERY SELECT salario * 1.04, salario * 0.04, 4;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+SELECT * FROM calcular_aumento_salarial(300.00);
+
+
+--SOLUCAO COM CASE
+CREATE OR REPLACE FUNCTION calcular_aumento_salarial(salario NUMERIC)
+RETURNS TABLE (
+    novo_salario NUMERIC,
+    reajuste_ganho NUMERIC,
+    percentual INT
+) AS
+$$
+BEGIN
+    CASE
+        WHEN salario <= 400.00 THEN
+            RETURN QUERY SELECT salario * 1.15, salario * 0.15, 15;
+        WHEN salario <= 800.00 THEN
+            RETURN QUERY SELECT salario * 1.12, salario * 0.12, 12;
+        WHEN salario <= 1200.00 THEN
+            RETURN QUERY SELECT salario * 1.10, salario * 0.10, 10;
+        WHEN salario <= 2000.00 THEN
+            RETURN QUERY SELECT salario * 1.07, salario * 0.07, 7;
+        ELSE
+            RETURN QUERY SELECT salario * 1.04, salario * 0.04, 4;
+    END CASE;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT * FROM calcular_aumento_salarial(400.00);
