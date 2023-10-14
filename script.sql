@@ -60,3 +60,82 @@ BEGIN
 END;
 $$;
 
+
+--1.3 Faça um programa que opera de acordo com o seguinte menu.
+-- Opções:
+-- 1 - Soma
+-- 2 - Subtração
+-- 3 - Multiplicação
+-- 4 - Divisão
+-- Cada operação envolve dois números inteiros. O resultado deve ser exibido no formato
+-- op1 op op2 = res
+-- Exemplo:
+-- 2 + 3 = 5
+
+
+--SOLUÇÃO COM IF
+CREATE OR REPLACE FUNCTION operacoes_matematicas_if(opcao INT, num1 INT, num2 INT) RETURNS TEXT AS
+$$
+DECLARE
+    resultado INT;
+    operacao TEXT;
+BEGIN
+    IF opcao = 1 THEN
+        resultado := num1 + num2;
+        operacao := '+';
+    ELSIF opcao = 2 THEN
+        resultado := num1 - num2;
+        operacao := '-';
+    ELSIF opcao = 3 THEN
+        resultado := num1 * num2;
+        operacao := '*';
+    ELSIF opcao = 4 THEN
+        IF num2 = 0 THEN
+            RETURN 'Divisão por zero não é permitida.';
+        ELSE
+            resultado := num1 / num2;
+            operacao := '/';
+        END IF;
+    ELSE
+        RETURN 'Opção inválida.';
+    END IF;
+
+    RETURN num1 || ' ' || operacao || ' ' || num2 || ' = ' || resultado;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT operacoes_matematicas_if(1, 5, 3); -- Deverá retornar "5 + 3 = 8"
+SELECT operacoes_matematicas_if(4, 8, 0); -- Deverá retornar "Divisão por zero não é permitida."
+
+
+--SOLUCAO COM CASE
+CREATE OR REPLACE FUNCTION operacoes_matematicas_case(opcao INT, num1 INT, num2 INT) RETURNS TEXT AS
+$$
+DECLARE
+    resultado INT;
+BEGIN
+    CASE opcao
+        WHEN 1 THEN
+            resultado := num1 + num2;
+            RETURN num1 || ' + ' || num2 || ' = ' || resultado;
+        WHEN 2 THEN
+            resultado := num1 - num2;
+            RETURN num1 || ' - ' || num2 || ' = ' || resultado;
+        WHEN 3 THEN
+            resultado := num1 * num2;
+            RETURN num1 || ' * ' || num2 || ' = ' || resultado;
+        WHEN 4 THEN
+            IF num2 = 0 THEN
+                RETURN 'Divisão por zero não é permitida.';
+            ELSE
+                resultado := num1 / num2;
+                RETURN num1 || ' / ' || num2 || ' = ' || resultado;
+            END IF;
+        ELSE
+            RETURN 'Opção inválida.';
+    END CASE;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT operacoes_matematicas_case(2, 10, 4); -- Deverá retornar "10 - 4 = 6"
+SELECT operacoes_matematicas_case(5, 7, 2); -- Deverá retornar "Opção inválida."
