@@ -139,3 +139,48 @@ $$ LANGUAGE plpgsql;
 
 SELECT operacoes_matematicas_case(2, 10, 4); -- Deverá retornar "10 - 4 = 6"
 SELECT operacoes_matematicas_case(5, 7, 2); -- Deverá retornar "Opção inválida."
+
+
+-- --1.4 Um comerciante comprou um produto e quer vendê-lo com um lucro de 45% se o valor
+-- da compra for menor que R$20. Caso contrário, ele deseja lucro de 30%. Faça um
+-- programa que, dado o valor do produto, calcula o valor de venda.
+
+--SOLUCAO COM IF
+CREATE OR REPLACE FUNCTION calcula_valor_venda_if(valor_compra NUMERIC) RETURNS NUMERIC AS
+$$
+DECLARE
+    percentual_lucro NUMERIC;
+BEGIN
+    IF valor_compra < 20 THEN
+        percentual_lucro := 0.45; -- 45%
+    ELSE
+        percentual_lucro := 0.30; -- 30%
+    END IF;
+
+    RETURN valor_compra + (valor_compra * percentual_lucro);
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT calcula_valor_venda_if(15); -- Deverá retornar o valor de venda com 45% de lucro
+
+
+--SOLUCAO COM CASE
+CREATE OR REPLACE FUNCTION calcula_valor_venda_case(valor_compra NUMERIC) RETURNS NUMERIC AS
+$$
+DECLARE
+    percentual_lucro NUMERIC;
+BEGIN
+    CASE
+        WHEN valor_compra < 20 THEN
+            percentual_lucro := 0.45; -- 45%
+        ELSE
+            percentual_lucro := 0.30; -- 30%
+    END CASE;
+
+    RETURN valor_compra + (valor_compra * percentual_lucro);
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT calcula_valor_venda_case(25); -- Deverá retornar o valor de venda com 30% de lucro
+
+
